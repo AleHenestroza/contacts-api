@@ -2,6 +2,7 @@ package com.tiendanube.contactsapi.unit.service;
 
 import com.tiendanube.contactsapi.dto.ContactResponse;
 import com.tiendanube.contactsapi.dto.CreateContactRequest;
+import com.tiendanube.contactsapi.error.exceptions.ContactAlreadyExistsException;
 import com.tiendanube.contactsapi.model.Contact;
 import com.tiendanube.contactsapi.repository.ContactsRepository;
 import com.tiendanube.contactsapi.service.implementations.ContactsService;
@@ -19,14 +20,12 @@ import static org.mockito.Mockito.when;
 public class ContactsServiceTest {
     private static ContactsRepository contactsRepository;
 
-    private static ModelMapper modelMapper;
-
     private static ContactsService contactsService;
 
     @BeforeAll
     static void setUp() {
         contactsRepository = Mockito.mock(ContactsRepository.class);
-        modelMapper = new ModelMapper();
+        ModelMapper modelMapper = new ModelMapper();
         contactsService = new ContactsService(contactsRepository, modelMapper);
     }
 
@@ -65,7 +64,7 @@ public class ContactsServiceTest {
 
         when(contactsRepository.existsByEmail("johndoe@email.com")).thenReturn(true);
 
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+        Assertions.assertThrows(ContactAlreadyExistsException.class, () -> {
             contactsService.createContact(createContactRequest);
         });
     }

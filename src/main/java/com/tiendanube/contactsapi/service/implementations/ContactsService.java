@@ -38,4 +38,11 @@ public class ContactsService implements com.tiendanube.contactsapi.service.Conta
         Contact contact = contactsRepository.findById(id).orElseThrow(() -> new ContactNotFoundException("Contact with id " + id + " not found"));
         return modelMapper.map(contact, GetContactResponse.class);
     }
+
+    public void deleteContact(String id) {
+        if (!contactsRepository.existsById(id)) {
+            throw new ContactNotFoundException("Contact with id " + id + " not found");
+        }
+        contactsRepository.deleteById(id);
+    }
 }

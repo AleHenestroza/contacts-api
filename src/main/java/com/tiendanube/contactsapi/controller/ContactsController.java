@@ -26,4 +26,10 @@ public class ContactsController {
     public ResponseEntity<GetContactResponse> getContact(@PathVariable String id) {
         return ResponseEntity.ok(contactsService.getContact(id));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteContact(@PathVariable String id) {
+        contactsService.deleteContact(id);
+        return ResponseEntity.noContent().build();
+    }
 }

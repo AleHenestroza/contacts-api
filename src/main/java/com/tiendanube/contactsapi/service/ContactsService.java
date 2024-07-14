@@ -7,4 +7,5 @@ import com.tiendanube.contactsapi.dto.GetContactResponse;
 public interface ContactsService {
     CreateContactResponse createContact(CreateContactRequest createContactRequest);
     GetContactResponse getContact(String id);
+    void deleteContact(String id);
 }

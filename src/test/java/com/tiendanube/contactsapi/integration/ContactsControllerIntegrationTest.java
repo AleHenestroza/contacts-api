@@ -63,9 +63,9 @@ public class ContactsControllerIntegrationTest {
     void test_createContact() throws Exception {
         String createContactRequest = """
                 {
-                  "email": "alehenestroza@gmail.com",
-                  "first_name": "Alejandro",
-                  "last_name": "Henestroza"
+                  "email": "testuser@testmail.com",
+                  "first_name": "test",
+                  "last_name": "user"
                 }""";
 
         RequestBuilder req = MockMvcRequestBuilders.post("/contacts")
@@ -110,8 +110,8 @@ public class ContactsControllerIntegrationTest {
         String createContactRequest = """
                 {
                   "email": "invalidemail",
-                  "first_name": "Alejandro",
-                  "last_name": "Henestroza"
+                  "first_name": "Test",
+                  "last_name": "User"
                 }""";
 
         RequestBuilder req = MockMvcRequestBuilders.post("/contacts")
@@ -145,10 +145,32 @@ public class ContactsControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(result -> {
                     String content = result.getResponse().getContentAsString();
-                    System.out.println(content);
                     Assertions.assertTrue(content.contains("\"email\":\"testuser@testmail.com\""));
                     Assertions.assertTrue(content.contains("\"first_name\":\"Test\""));
                     Assertions.assertTrue(content.contains("\"last_name\":\"User\""));
                 });
+    }
+
+    @Test
+    void test_deleteContact() throws Exception {
+        InsertOneResult res = mongoDatabase.getCollection("contacts").insertOne(Document.parse("""
+            {
+                "email": "testuser@testmail.com",
+                "firstName": "Test",
+                "lastName": "User"
+            }""")
+        );
+
+        assert res.getInsertedId() != null;
+        String id = res.getInsertedId().asObjectId().getValue().toString();
+
+        RequestBuilder req = MockMvcRequestBuilders.delete("/contacts/" + id)
+                .accept("application/json");
+
+        mockMvc.perform(req)
+                .andDo(result -> System.out.println(result.getResponse().getContentAsString()))
+                .andExpect(status().isNoContent());
+
+        Assertions.assertEquals(0, mongoDatabase.getCollection("contacts").countDocuments());
     }
 }

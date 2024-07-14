@@ -3,6 +3,9 @@ package com.tiendanube.contactsapi.integration;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.result.InsertOneResult;
+import org.bson.BsonValue;
+import org.bson.Document;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -61,8 +64,8 @@ public class ContactsControllerIntegrationTest {
         String createContactRequest = """
                 {
                   "email": "alehenestroza@gmail.com",
-                  "firstName": "Alejandro",
-                  "lastName": "Henestroza"
+                  "first_name": "Alejandro",
+                  "last_name": "Henestroza"
                 }""";
 
         RequestBuilder req = MockMvcRequestBuilders.post("/contacts")
@@ -77,23 +80,25 @@ public class ContactsControllerIntegrationTest {
 
     @Test
     void test_createContact_failsWhenEmailIsDuplicated() throws Exception {
+        mongoDatabase.getCollection("contacts").insertOne(Document.parse("""
+            {
+                "email": "testuser@testmail.com",
+                "firstName": "Test",
+                "lastName": "User"
+            }""")
+        );
+
         String createContactRequest = """
                 {
-                  "email": "alehenestroza@gmail.com",
-                  "firstName": "Alejandro",
-                  "lastName": "Henestroza"
+                    "email": "testuser@testmail.com",
+                    "first_name": "Test",
+                    "last_name": "User"
                 }""";
 
         RequestBuilder req = MockMvcRequestBuilders.post("/contacts")
                 .content(createContactRequest)
                 .contentType("application/json")
                 .accept("application/json");
-
-
-        mockMvc.perform(req)
-                .andDo(result -> System.out.println(result.getResponse().getContentAsString()))
-                .andExpect(status().isCreated());
-
 
         mockMvc.perform(req)
                 .andDo(result -> System.out.println(result.getResponse().getContentAsString()))
@@ -105,8 +110,8 @@ public class ContactsControllerIntegrationTest {
         String createContactRequest = """
                 {
                   "email": "invalidemail",
-                  "firstName": "Alejandro",
-                  "lastName": "Henestroza"
+                  "first_name": "Alejandro",
+                  "last_name": "Henestroza"
                 }""";
 
         RequestBuilder req = MockMvcRequestBuilders.post("/contacts")
@@ -117,5 +122,33 @@ public class ContactsControllerIntegrationTest {
         mockMvc.perform(req)
                 .andDo(result -> System.out.println(result.getResponse().getContentAsString()))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void test_getContact() throws Exception {
+        InsertOneResult res = mongoDatabase.getCollection("contacts").insertOne(Document.parse("""
+            {
+                "email": "testuser@testmail.com",
+                "firstName": "Test",
+                "lastName": "User"
+            }""")
+        );
+
+        assert res.getInsertedId() != null;
+        String id = res.getInsertedId().asObjectId().getValue().toString();
+
+        RequestBuilder req = MockMvcRequestBuilders.get("/contacts/" + id)
+                .accept("application/json");
+
+        mockMvc.perform(req)
+                .andDo(result -> System.out.println(result.getResponse().getContentAsString()))
+                .andExpect(status().isOk())
+                .andExpect(result -> {
+                    String content = result.getResponse().getContentAsString();
+                    System.out.println(content);
+                    Assertions.assertTrue(content.contains("\"email\":\"testuser@testmail.com\""));
+                    Assertions.assertTrue(content.contains("\"first_name\":\"Test\""));
+                    Assertions.assertTrue(content.contains("\"last_name\":\"User\""));
+                });
     }
 }

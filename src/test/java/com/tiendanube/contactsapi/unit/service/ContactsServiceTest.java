@@ -1,7 +1,8 @@
 package com.tiendanube.contactsapi.unit.service;
 
-import com.tiendanube.contactsapi.dto.ContactResponse;
+import com.tiendanube.contactsapi.dto.CreateContactResponse;
 import com.tiendanube.contactsapi.dto.CreateContactRequest;
+import com.tiendanube.contactsapi.dto.GetContactResponse;
 import com.tiendanube.contactsapi.error.exceptions.ContactAlreadyExistsException;
 import com.tiendanube.contactsapi.model.Contact;
 import com.tiendanube.contactsapi.repository.ContactsRepository;
@@ -13,6 +14,7 @@ import org.mockito.Mockito;
 import org.modelmapper.ModelMapper;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -48,7 +50,7 @@ public class ContactsServiceTest {
 
         when(contactsRepository.save(any())).thenReturn(savedContact);
 
-        ContactResponse contactResponse = contactsService.createContact(createContactRequest);
+        CreateContactResponse contactResponse = contactsService.createContact(createContactRequest);
 
         Assertions.assertEquals("1", contactResponse.getId(), "The contact id is different from the expected");
         Assertions.assertEquals(createdAt, contactResponse.getCreatedAt(), "The contact createdAt is different from the expected");
@@ -67,5 +69,29 @@ public class ContactsServiceTest {
         Assertions.assertThrows(ContactAlreadyExistsException.class, () -> {
             contactsService.createContact(createContactRequest);
         });
+    }
+
+    @Test
+    void test_getContact() {
+        String id = "1";
+
+        LocalDateTime createdAt = LocalDateTime.now();
+        Contact savedContact = new Contact(
+                "1",
+                "johndow@email.com",
+                "John",
+                "Doe",
+                createdAt
+        );
+
+        when(contactsRepository.findById(id)).thenReturn(Optional.of(savedContact));
+
+        GetContactResponse contact = contactsService.getContact(id);
+
+        Assertions.assertEquals(savedContact.getId(), contact.getId(), "The contact id is different from the expected");
+        Assertions.assertEquals(savedContact.getEmail(), contact.getEmail(), "The contact email is different from the expected");
+        Assertions.assertEquals(savedContact.getFirstName(), contact.getFirstName(), "The contact firstName is different from the expected");
+        Assertions.assertEquals(savedContact.getLastName(), contact.getLastName(), "The contact lastName is different from the expected");
+        Assertions.assertEquals(savedContact.getCreatedAt(), contact.getCreatedAt(), "The contact createdAt is different from the expected");           
     }
 }

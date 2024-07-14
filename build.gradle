@@ -69,4 +69,5 @@ jar {
 
 tasks.named('test') {
     useJUnitPlatform()
+    outputs.upToDateWhen { false } // Always run tests without caching
 }

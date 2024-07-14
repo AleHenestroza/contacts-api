@@ -1,12 +1,13 @@
 package com.tiendanube.contactsapi.integration;
 
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.result.InsertOneResult;
-import org.bson.BsonValue;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.bson.Document;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,8 +18,10 @@ import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
-
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.result.InsertOneResult;
 
 @Testcontainers
 @AutoConfigureMockMvc
@@ -26,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ContactsControllerIntegrationTest {
     @Container
     static MongoDBContainer mongoDBContainer = new MongoDBContainer(DockerImageName.parse("mongo:7.0.12"))
-            .withExposedPorts(27017);
+        .withExposedPorts(27017);
 
     @Autowired
     MockMvc mockMvc;
@@ -40,7 +43,8 @@ public class ContactsControllerIntegrationTest {
         System.setProperty("spring.data.mongodb.host", mongoDBContainer.getHost());
         System.setProperty("spring.data.mongodb.port", String.valueOf(mongoDBContainer.getMappedPort(27017)));
         System.setProperty("springjsondb.database", "test");
-        System.setProperty("spring.data.mongodb.uri", "mongodb://" + mongoDBContainer.getHost() + ":" + mongoDBContainer.getMappedPort(27017) + "/test");
+        System.setProperty("spring.data.mongodb.uri",
+            "mongodb://" + mongoDBContainer.getHost() + ":" + mongoDBContainer.getMappedPort(27017) + "/test");
     }
 
     @AfterAll
@@ -50,7 +54,8 @@ public class ContactsControllerIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        mongoClient = MongoClients.create("mongodb://" + mongoDBContainer.getHost() + ":" + mongoDBContainer.getMappedPort(27017));
+        mongoClient = MongoClients.create(
+            "mongodb://" + mongoDBContainer.getHost() + ":" + mongoDBContainer.getMappedPort(27017));
         mongoDatabase = mongoClient.getDatabase("test");
     }
 
@@ -62,20 +67,20 @@ public class ContactsControllerIntegrationTest {
     @Test
     void test_createContact() throws Exception {
         String createContactRequest = """
-                {
-                  "email": "testuser@testmail.com",
-                  "first_name": "test",
-                  "last_name": "user"
-                }""";
+            {
+              "email": "testuser@testmail.com",
+              "first_name": "test",
+              "last_name": "user"
+            }""";
 
         RequestBuilder req = MockMvcRequestBuilders.post("/contacts")
-                .content(createContactRequest)
-                .contentType("application/json")
-                .accept("application/json");
+            .content(createContactRequest)
+            .contentType("application/json")
+            .accept("application/json");
 
         mockMvc.perform(req)
-                .andDo(result -> System.out.println(result.getResponse().getContentAsString()))
-                .andExpect(status().isCreated());
+            .andDo(result -> System.out.println(result.getResponse().getContentAsString()))
+            .andExpect(status().isCreated());
     }
 
     @Test
@@ -89,39 +94,39 @@ public class ContactsControllerIntegrationTest {
         );
 
         String createContactRequest = """
-                {
-                    "email": "testuser@testmail.com",
-                    "first_name": "Test",
-                    "last_name": "User"
-                }""";
+            {
+                "email": "testuser@testmail.com",
+                "first_name": "Test",
+                "last_name": "User"
+            }""";
 
         RequestBuilder req = MockMvcRequestBuilders.post("/contacts")
-                .content(createContactRequest)
-                .contentType("application/json")
-                .accept("application/json");
+            .content(createContactRequest)
+            .contentType("application/json")
+            .accept("application/json");
 
         mockMvc.perform(req)
-                .andDo(result -> System.out.println(result.getResponse().getContentAsString()))
-                .andExpect(status().isBadRequest());
+            .andDo(result -> System.out.println(result.getResponse().getContentAsString()))
+            .andExpect(status().isBadRequest());
     }
 
     @Test
     void test_createContact_failsWhenEmailIsInvalid() throws Exception {
         String createContactRequest = """
-                {
-                  "email": "invalidemail",
-                  "first_name": "Test",
-                  "last_name": "User"
-                }""";
+            {
+              "email": "invalidemail",
+              "first_name": "Test",
+              "last_name": "User"
+            }""";
 
         RequestBuilder req = MockMvcRequestBuilders.post("/contacts")
-                .content(createContactRequest)
-                .contentType("application/json")
-                .accept("application/json");
+            .content(createContactRequest)
+            .contentType("application/json")
+            .accept("application/json");
 
         mockMvc.perform(req)
-                .andDo(result -> System.out.println(result.getResponse().getContentAsString()))
-                .andExpect(status().isBadRequest());
+            .andDo(result -> System.out.println(result.getResponse().getContentAsString()))
+            .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -138,17 +143,17 @@ public class ContactsControllerIntegrationTest {
         String id = res.getInsertedId().asObjectId().getValue().toString();
 
         RequestBuilder req = MockMvcRequestBuilders.get("/contacts/" + id)
-                .accept("application/json");
+            .accept("application/json");
 
         mockMvc.perform(req)
-                .andDo(result -> System.out.println(result.getResponse().getContentAsString()))
-                .andExpect(status().isOk())
-                .andExpect(result -> {
-                    String content = result.getResponse().getContentAsString();
-                    Assertions.assertTrue(content.contains("\"email\":\"testuser@testmail.com\""));
-                    Assertions.assertTrue(content.contains("\"first_name\":\"Test\""));
-                    Assertions.assertTrue(content.contains("\"last_name\":\"User\""));
-                });
+            .andDo(result -> System.out.println(result.getResponse().getContentAsString()))
+            .andExpect(status().isOk())
+            .andExpect(result -> {
+                String content = result.getResponse().getContentAsString();
+                Assertions.assertTrue(content.contains("\"email\":\"testuser@testmail.com\""));
+                Assertions.assertTrue(content.contains("\"first_name\":\"Test\""));
+                Assertions.assertTrue(content.contains("\"last_name\":\"User\""));
+            });
     }
 
     @Test
@@ -165,11 +170,11 @@ public class ContactsControllerIntegrationTest {
         String id = res.getInsertedId().asObjectId().getValue().toString();
 
         RequestBuilder req = MockMvcRequestBuilders.delete("/contacts/" + id)
-                .accept("application/json");
+            .accept("application/json");
 
         mockMvc.perform(req)
-                .andDo(result -> System.out.println(result.getResponse().getContentAsString()))
-                .andExpect(status().isNoContent());
+            .andDo(result -> System.out.println(result.getResponse().getContentAsString()))
+            .andExpect(status().isNoContent());
 
         Assertions.assertEquals(0, mongoDatabase.getCollection("contacts").countDocuments());
     }

@@ -4,6 +4,7 @@ import com.tiendanube.contactsapi.dto.CreateContactResponse;
 import com.tiendanube.contactsapi.dto.CreateContactRequest;
 import com.tiendanube.contactsapi.dto.GetContactResponse;
 import com.tiendanube.contactsapi.error.exceptions.ContactAlreadyExistsException;
+import com.tiendanube.contactsapi.error.exceptions.ContactNotFoundException;
 import com.tiendanube.contactsapi.model.Contact;
 import com.tiendanube.contactsapi.repository.ContactsRepository;
 import com.tiendanube.contactsapi.service.implementations.ContactsService;
@@ -93,5 +94,38 @@ public class ContactsServiceTest {
         Assertions.assertEquals(savedContact.getFirstName(), contact.getFirstName(), "The contact firstName is different from the expected");
         Assertions.assertEquals(savedContact.getLastName(), contact.getLastName(), "The contact lastName is different from the expected");
         Assertions.assertEquals(savedContact.getCreatedAt(), contact.getCreatedAt(), "The contact createdAt is different from the expected");           
+    }
+
+    @Test
+    void test_getContact_notFound() {
+        String id = "1";
+
+        when(contactsRepository.findById(id)).thenReturn(Optional.empty());
+
+        Assertions.assertThrows(ContactNotFoundException.class, () -> {
+            contactsService.getContact(id);
+        });
+    }
+
+    @Test
+    void test_deleteContact() {
+        String id = "1";
+
+        when(contactsRepository.existsById(id)).thenReturn(true);
+
+        contactsService.deleteContact(id);
+
+        Mockito.verify(contactsRepository).deleteById(id);
+    }
+
+    @Test
+    void test_deleteContact_notFound() {
+        String id = "1";
+
+        when(contactsRepository.existsById(id)).thenReturn(false);
+
+        Assertions.assertThrows(ContactNotFoundException.class, () -> {
+            contactsService.deleteContact(id);
+        });
     }
 }

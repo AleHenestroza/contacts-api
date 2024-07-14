@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class CreateContactRequest {
     @Email
     @NotBlank
-    String email;
-    String firstName;
-    String lastName;
+    private String email;
+    private String firstName;
+    private String lastName;
 }

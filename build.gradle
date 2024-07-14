@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.3.1'
     id 'io.spring.dependency-management' version '1.1.5'
+    id 'checkstyle'
 }
 
 group = 'com.tiendanube'
@@ -45,6 +46,22 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
+checkstyle {
+    toolVersion = '10.17.0'
+}
+
+tasks.withType(Checkstyle).configureEach {
+    ignoreFailures = true // Do not fail the build on Checkstyle errors
+}
+
+// Custom checkstyle task to run only on the source code and fail for CI workflows
+tasks.register('runCheckstyle', Checkstyle) {
+    source 'src/main/java'
+    include '**/*.java'
+    classpath = sourceSets.main.compileClasspath
+    ignoreFailures = false
+}
+
 jar {
     enabled = true
     archiveBaseName = 'app'
@@ -52,4 +69,5 @@ jar {
 
 tasks.named('test') {
     useJUnitPlatform()
+    outputs.upToDateWhen { false } // Always run tests without caching
 }

@@ -1,11 +1,11 @@
 package com.tiendanube.contactsapi.error;
 
-import com.tiendanube.contactsapi.dto.ErrorResponse;
-import com.tiendanube.contactsapi.error.exceptions.ContactAlreadyExistsException;
-import com.tiendanube.contactsapi.error.exceptions.ContactNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import com.tiendanube.contactsapi.dto.ErrorResponse;
+import com.tiendanube.contactsapi.error.exceptions.ContactAlreadyExistsException;
+import com.tiendanube.contactsapi.error.exceptions.ContactNotFoundException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {

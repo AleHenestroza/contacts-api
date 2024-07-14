@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 public class UpdateContactRequest {
-    @Email
+    @Email(message = "Email should be valid")
     private String email;
     private String firstName;
     private String lastName;

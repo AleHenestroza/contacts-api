@@ -258,6 +258,6 @@ public class ContactsServiceTest {
 
         Assertions.assertThrows(ContactNotFoundException.class, () -> {
             contactsService.updateContact(id, updateContactRequest);
-        }); 
+        });
     }
 }

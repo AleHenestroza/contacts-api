@@ -27,7 +27,8 @@ public class ContactsController {
 
     @PostMapping()
     public ResponseEntity<CreateContactResponse> createContact(
-        @RequestBody @Valid CreateContactRequest createContactRequest) {
+        @RequestBody @Valid CreateContactRequest createContactRequest
+    ) {
         return ResponseEntity.status(201).body(contactsService.createContact(createContactRequest));
     }
 
@@ -43,7 +44,10 @@ public class ContactsController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<GetContactResponse> updateContact(@PathVariable String id, @RequestBody @Valid UpdateContactRequest updateContactRequest) {
+    public ResponseEntity<GetContactResponse> updateContact(
+        @PathVariable String id,
+        @RequestBody @Valid UpdateContactRequest updateContactRequest
+    ) {
         GetContactResponse response = contactsService.updateContact(id, updateContactRequest);
         return ResponseEntity.ok(response);
     }

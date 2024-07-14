@@ -32,7 +32,12 @@ dependencies {
 
     // Validation
     implementation 'org.modelmapper:modelmapper:3.2.0'
+
+    // Date Time
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+    // Springdoc OpenAPI
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
 
     // Dev Utils
     compileOnly 'org.projectlombok:lombok'

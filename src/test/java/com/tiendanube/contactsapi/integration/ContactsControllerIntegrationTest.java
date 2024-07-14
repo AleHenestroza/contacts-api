@@ -28,14 +28,13 @@ import com.mongodb.client.result.InsertOneResult;
 @SpringBootTest
 public class ContactsControllerIntegrationTest {
     @Container
-    static MongoDBContainer mongoDBContainer = new MongoDBContainer(DockerImageName.parse("mongo:7.0.12"))
+    private static MongoDBContainer mongoDBContainer = new MongoDBContainer(DockerImageName.parse("mongo:7.0.12"))
         .withExposedPorts(27017);
 
     @Autowired
-    MockMvc mockMvc;
+    private MockMvc mockMvc;
 
-    MongoClient mongoClient;
-    MongoDatabase mongoDatabase;
+    private MongoDatabase mongoDatabase;
 
     @BeforeAll
     static void beforeAll() {
@@ -54,7 +53,7 @@ public class ContactsControllerIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        mongoClient = MongoClients.create(
+        MongoClient mongoClient = MongoClients.create(
             "mongodb://" + mongoDBContainer.getHost() + ":" + mongoDBContainer.getMappedPort(27017));
         mongoDatabase = mongoClient.getDatabase("test");
     }

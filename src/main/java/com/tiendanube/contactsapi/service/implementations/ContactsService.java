@@ -1,16 +1,15 @@
 package com.tiendanube.contactsapi.service.implementations;
 
-import com.tiendanube.contactsapi.dto.CreateContactResponse;
+import java.time.LocalDateTime;
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Service;
 import com.tiendanube.contactsapi.dto.CreateContactRequest;
+import com.tiendanube.contactsapi.dto.CreateContactResponse;
 import com.tiendanube.contactsapi.dto.GetContactResponse;
 import com.tiendanube.contactsapi.error.exceptions.ContactAlreadyExistsException;
 import com.tiendanube.contactsapi.error.exceptions.ContactNotFoundException;
 import com.tiendanube.contactsapi.model.Contact;
 import com.tiendanube.contactsapi.repository.ContactsRepository;
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
 
 @Service
 public class ContactsService implements com.tiendanube.contactsapi.service.ContactsService {
@@ -35,7 +34,8 @@ public class ContactsService implements com.tiendanube.contactsapi.service.Conta
     }
 
     public GetContactResponse getContact(String id) {
-        Contact contact = contactsRepository.findById(id).orElseThrow(() -> new ContactNotFoundException("Contact with id " + id + " not found"));
+        Contact contact = contactsRepository.findById(id)
+            .orElseThrow(() -> new ContactNotFoundException("Contact with id " + id + " not found"));
         return modelMapper.map(contact, GetContactResponse.class);
     }
 

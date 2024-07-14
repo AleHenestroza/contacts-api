@@ -1,14 +1,13 @@
 package com.tiendanube.contactsapi.dto;
 
-import lombok.Data;
-
 import java.time.LocalDateTime;
+import lombok.Data;
 
 @Data
 public class GetContactResponse {
-    String id;
-    String email;
-    String firstName;
-    String lastName;
-    LocalDateTime createdAt;
+    private String id;
+    private String email;
+    private String firstName;
+    private String lastName;
+    private LocalDateTime createdAt;
 }

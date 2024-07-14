@@ -38,15 +38,13 @@ public class ContactsController {
             description = "Contact created successfully",
             content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = CreateContactResponse.class))
-            }
-        ),
+            }),
         @ApiResponse(
             responseCode = "400",
             description = "Invalid request body",
             content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
-            }
-        )
+            })
     })
     @PostMapping()
     public ResponseEntity<CreateContactResponse> createContact(
@@ -62,15 +60,13 @@ public class ContactsController {
             description = "Contact found",
             content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = GetContactResponse.class))
-            }
-        ),
+            }),
         @ApiResponse(
             responseCode = "404",
             description = "Contact not found",
             content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
-            }
-        )
+            })
     })
     @GetMapping("/{id}")
     public ResponseEntity<GetContactResponse> getContact(@PathVariable String id) {
@@ -85,8 +81,7 @@ public class ContactsController {
             description = "Contact not found",
             content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
-            }
-        )
+            })
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteContact(@PathVariable String id) {
@@ -101,22 +96,19 @@ public class ContactsController {
             description = "Contact updated",
             content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = GetContactResponse.class))
-            }
-        ),
+            }),
         @ApiResponse(
             responseCode = "404",
             description = "Contact not found",
             content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
-            }
-        ),
+            }),
         @ApiResponse(
-            responseCode = "400",   
+            responseCode = "400",
             description = "Invalid request body",
             content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
-            }
-        )
+            })
     })
     @PutMapping("/{id}")
     public ResponseEntity<GetContactResponse> updateContact(

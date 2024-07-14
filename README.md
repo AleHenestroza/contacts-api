@@ -47,12 +47,14 @@ docker-compose up --build
 
 ## API Documentation
 
-The API documentation is available at `http://localhost:8080/swagger-ui/index.html`. You can use the Swagger UI to test
-the endpoints and see the expected request and response formats.
+The API Swagger documentation is available at `http://localhost:8080/swagger-ui/index.html`. You can use the Swagger UI
+to test the endpoints and see the expected request and response formats. OpenAPI definitions can be found
+at `http://localhost:8080/api/docs`.
 
 Alternatively, a tool like Postman can be used to test the API. The API has the following endpoints:
 
 - `POST /contacts`: Create a new contact
+
 ```shell
 curl --location --request POST 'http://localhost:8080/contacts' \
 --header 'Content-Type: application/json' \
@@ -62,11 +64,15 @@ curl --location --request POST 'http://localhost:8080/contacts' \
     "last_name": "User"
 }'
 ```
+
 - `GET /contacts/{id}`: List all contacts
+
 ```shell
 curl --location -g --request GET 'http://localhost:8080/contacts/{id}'
 ```
+
 - `PUT /contacts/{id}`: Update a contact (partial update supported)
+
 ```shell
 curl --location -g --request PUT 'http://localhost:8080/contacts/{id}' \
 --header 'Content-Type: application/json' \
@@ -76,7 +82,9 @@ curl --location -g --request PUT 'http://localhost:8080/contacts/{id}' \
     "last_name": "NewLastName"
 }'
 ```
+
 - `DELETE /contacts/{id}`: Delete a contact
+
 ```shell
 curl --location -g --request DELETE 'http://localhost:8080/contacts/{id}'
 ```

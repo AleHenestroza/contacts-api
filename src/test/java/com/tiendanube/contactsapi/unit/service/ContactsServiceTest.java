@@ -12,6 +12,7 @@ import org.modelmapper.ModelMapper;
 import com.tiendanube.contactsapi.dto.CreateContactRequest;
 import com.tiendanube.contactsapi.dto.CreateContactResponse;
 import com.tiendanube.contactsapi.dto.GetContactResponse;
+import com.tiendanube.contactsapi.dto.UpdateContactRequest;
 import com.tiendanube.contactsapi.error.exceptions.ContactAlreadyExistsException;
 import com.tiendanube.contactsapi.error.exceptions.ContactNotFoundException;
 import com.tiendanube.contactsapi.model.Contact;
@@ -130,5 +131,133 @@ public class ContactsServiceTest {
         Assertions.assertThrows(ContactNotFoundException.class, () -> {
             contactsService.deleteContact(id);
         });
+    }
+
+    @Test
+    void test_updateContact() {
+        String id = "1";
+        String expectedFirstName = "NewFirstName";
+        String expectedLastName = "NewLastName";
+        String expectedEmail = "newtestemail@email.com";
+        UpdateContactRequest updateContactRequest = new UpdateContactRequest();
+        updateContactRequest.setEmail(expectedEmail);
+        updateContactRequest.setLastName(expectedLastName);
+        updateContactRequest.setFirstName(expectedFirstName);
+
+        Contact savedContact = new Contact(
+            "1",
+            "testmail@email.com",
+            "Test",
+            "Mail",
+            LocalDateTime.now()
+        );
+
+        when(contactsRepository.findById(id)).thenReturn(Optional.of(savedContact));
+        when(contactsRepository.save(any())).thenReturn(savedContact);
+
+        GetContactResponse updatedContact = contactsService.updateContact(id, updateContactRequest);
+
+        Assertions.assertEquals(expectedEmail, updatedContact.getEmail(),
+            "The contact email is different from the expected");
+        Assertions.assertEquals(expectedFirstName, updatedContact.getFirstName(),
+            "The contact firstName is different from the expected");
+        Assertions.assertEquals(expectedLastName, updatedContact.getLastName(),
+            "The contact lastName is different from the expected");
+    }
+
+    @Test
+    void test_updateContact_onlyEmail() {
+        String id = "1";
+        String expectedEmail = "newtestemail@email.com";
+        UpdateContactRequest updateContactRequest = new UpdateContactRequest();
+        updateContactRequest.setEmail(expectedEmail);
+
+        Contact savedContact = new Contact(
+            "1",
+            "testmail@email.com",
+            "Test",
+            "Mail",
+            LocalDateTime.now()
+        );
+
+        when(contactsRepository.findById(id)).thenReturn(Optional.of(savedContact));
+        when(contactsRepository.save(any())).thenReturn(savedContact);
+
+        GetContactResponse updatedContact = contactsService.updateContact(id, updateContactRequest);
+
+        Assertions.assertEquals(expectedEmail, updatedContact.getEmail(),
+            "The contact email is different from the expected");
+        Assertions.assertEquals(savedContact.getFirstName(), updatedContact.getFirstName(),
+            "The contact firstName is different from the expected");
+        Assertions.assertEquals(savedContact.getLastName(), updatedContact.getLastName(),
+            "The contact lastName is different from the expected");
+    }
+
+    @Test
+    void test_updateContact_onlyFirstName() {
+        String id = "1";
+        String expectedFirstName = "NewFirstName";
+        UpdateContactRequest updateContactRequest = new UpdateContactRequest();
+        updateContactRequest.setFirstName(expectedFirstName);
+
+        Contact savedContact = new Contact(
+            "1",
+            "testmail@email.com",
+            "Test",
+            "Mail",
+            LocalDateTime.now()
+        );
+
+        when(contactsRepository.findById(id)).thenReturn(Optional.of(savedContact));
+        when(contactsRepository.save(any())).thenReturn(savedContact);
+
+        GetContactResponse updatedContact = contactsService.updateContact(id, updateContactRequest);
+
+        Assertions.assertEquals(savedContact.getEmail(), updatedContact.getEmail(),
+            "The contact email is different from the expected");
+        Assertions.assertEquals(expectedFirstName, updatedContact.getFirstName(),
+            "The contact firstName is different from the expected");
+        Assertions.assertEquals(savedContact.getLastName(), updatedContact.getLastName(),
+            "The contact lastName is different from the expected");
+    }
+
+    @Test
+    void test_updateContact_onlyLastName() {
+        String id = "1";
+        String expectedLastName = "NewLastName";
+        UpdateContactRequest updateContactRequest = new UpdateContactRequest();
+        updateContactRequest.setLastName(expectedLastName);
+
+        Contact savedContact = new Contact(
+            "1",
+            "testmail@email.com",
+            "Test",
+            "Mail",
+            LocalDateTime.now()
+        );
+
+        when(contactsRepository.findById(id)).thenReturn(Optional.of(savedContact));
+        when(contactsRepository.save(any())).thenReturn(savedContact);
+
+        GetContactResponse updatedContact = contactsService.updateContact(id, updateContactRequest);
+
+        Assertions.assertEquals(savedContact.getEmail(), updatedContact.getEmail(),
+            "The contact email is different from the expected");
+        Assertions.assertEquals(savedContact.getFirstName(), updatedContact.getFirstName(),
+            "The contact firstName is different from the expected");
+        Assertions.assertEquals(expectedLastName, updatedContact.getLastName(),
+            "The contact lastName is different from the expected");
+    }
+
+    @Test
+    void test_updateContact_notFound() {
+        String id = "1";
+        UpdateContactRequest updateContactRequest = new UpdateContactRequest();
+
+        when(contactsRepository.findById(id)).thenReturn(Optional.empty());
+
+        Assertions.assertThrows(ContactNotFoundException.class, () -> {
+            contactsService.updateContact(id, updateContactRequest);
+        }); 
     }
 }

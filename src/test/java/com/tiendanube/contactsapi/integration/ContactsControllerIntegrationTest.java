@@ -178,4 +178,39 @@ public class ContactsControllerIntegrationTest {
 
         Assertions.assertEquals(0, mongoDatabase.getCollection("contacts").countDocuments());
     }
+
+    @Test
+    void test_updateContact() throws Exception {
+        InsertOneResult res = mongoDatabase.getCollection("contacts").insertOne(Document.parse("""
+            {
+                "email": "testuser@testmail.com",
+                "firstName": "Test",
+                "lastName": "OldLastName"
+            }""")
+        );
+
+        assert res.getInsertedId() != null;
+        String id = res.getInsertedId().asObjectId().getValue().toString();
+
+        String updateContactRequest = """
+            {
+                "email": "newemail@testmail.com",
+                "first_name": "NewName"
+            }""";
+
+        RequestBuilder req = MockMvcRequestBuilders.put("/contacts/" + id)
+            .content(updateContactRequest)
+            .contentType("application/json")
+            .accept("application/json");
+
+        mockMvc.perform(req)
+            .andDo(result -> System.out.println(result.getResponse().getContentAsString()))
+            .andExpect(status().isOk())
+            .andExpect(result -> {
+                String content = result.getResponse().getContentAsString();
+                Assertions.assertTrue(content.contains("\"email\":\"newemail@testmail.com\""));
+                Assertions.assertTrue(content.contains("\"first_name\":\"NewName\""));
+                Assertions.assertTrue(content.contains("\"last_name\":\"OldLastName\""));
+            });
+    }
 }

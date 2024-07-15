@@ -88,3 +88,15 @@ curl --location -g --request PUT 'http://localhost:8080/contacts/{id}' \
 ```shell
 curl --location -g --request DELETE 'http://localhost:8080/contacts/{id}'
 ```
+
+## Testing
+
+In order to run the integration tests, you need to have the Docker daemon running, as this project uses [TestContainers](https://testcontainers.com/) instead of mocking the DB.
+
+## Technologies used
+
+- Java 21
+- Spring Boot 3.3.1
+- MongoDDB 7
+- Docker & Docker Compose
+- Testcontainers
